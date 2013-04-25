@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>My PiRover</title>
+    <!-- Le styles -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+
+        .btn {
+            margin: 2px 1px;
+        }
+    </style>
+    <link href="{{ url_for('static', filename='css/bootstrap-responsive.css') }}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>My PiRover</h1>
+
+    <p>
+        Use this document as a way to quick start any new project.<br> All you get is this message
+        and a barebones HTML document.
+    </p>
+
+    <div class="liveStream">
+        &nbsp;
+    </div>
+
+    <p id="log"></p>
+
+    <div class="controlPanel">
+        <button class="btn invisible" type="button">&nbsp;</button>
+        <button id="forward" class="btn btn-primary" type="button">&nbsp;</button>
+        <button class="btn invisible" type="button">&nbsp;</button>
+        <br/>
+        <button id="left" class="btn btn-primary" type="button">&nbsp;</button>
+        <button id="stop" class="btn btn-primary" type="button">&nbsp;</button>
+        <button id="right" class="btn btn btn-primary" type="button">&nbsp;</button>
+        <br/>
+        <button class="btn invisible" type="button">&nbsp;</button>
+        <button id="backward" class="btn btn-primary" type="button">&nbsp;</button>
+        <button class="btn invisible" type="button">&nbsp;</button>
+
+        <br/><br/><br/><br/>
+        <button id="off" class="btn btn-primary" type="button">OFF</button>
+    </div>
+
+
+</div>
+
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function () {
+        if ("WebSocket" in window) {
+            ws = new WebSocket("ws://" + document.domain + ":5000/websocket");
+            ws.onmessage = function (msg) {
+                var message = JSON.parse(msg.data);
+                $("p#log").html(message.output);
+            };
+        }
+        ;
+
+        // Bind send button to websocket
+        $(".controlPanel button").live("click", function () {
+            if ($(this).attr("id")) {
+                ws.send(JSON.stringify({'command': $(this).attr("id")}));
+                $(this).switchClass("btn-primary", "btn-success", 250);
+                $(this).switchClass("btn-success", "btn-primary", 250);
+            }
+        });
+
+        // Cleanly close websocket when unload window
+        window.onbeforeunload = function () {
+            ws.onclose = function () {
+            }; // disable onclose handler first
+            ws.close()
+        };
+    });
+</script>
+
+
+</body>
+</html>

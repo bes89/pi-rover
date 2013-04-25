@@ -1,0 +1,14 @@
+body {
+
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.liveStream {
+    width: 640px;
+    height: 480px;
+    background-color: #ccc;
+    border: 2px solid black;
+}
