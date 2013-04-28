@@ -34,28 +34,26 @@ void loop()
 }
 
 String getCommandFromInput(String input) {
-  return input;
+  String result = input;
+  int positionOfColon = input.indexOf(':');
+  
+  if (positionOfColon)
+  {
+    result = input.substring(0, positionOfColon);
+  }
+ 
+  return result; 
 }
 
 int getArgumentFromInput(String input) {
-
   int result = -1;
-  
   int positionOfColon = input.indexOf(':');
-  
-  Serial.print(String("Position of colon: ")+positionOfColon+"\n");
   
   if (positionOfColon)
   {
     int length = input.length() - positionOfColon;
-    
-    Serial.print(String("Length: ")+length+"\n");
-    
-    String argumentToBeParsedToInt = input.substring(positionOfColon);
-    
-    Serial.print(String("argumentToBeParsedToInt: ")+argumentToBeParsedToInt+"\n");
-    
-    //result = atoi(argumentToBeParsedToInt);
+    String argument = input.substring(positionOfColon + 1);
+    result = argument.toInt();
   }
  
   return result; 
@@ -69,17 +67,17 @@ String handleCommand(String input) {
   int argument = getArgumentFromInput(input);
   
   if(command == "check battery status") {
-    result = checkBatteryStatus();
+    result = checkBatteryStatus(argument);
   } else if(command == "forward") {
-    result = forward();
+    result = forward(argument);
   } else if(command == "backward") {
-    result = backward();
+    result = backward(argument);
   } else if(command == "left") {
-    result = left();
+    result = left(argument);
   } else if(command == "right") {
-    result = right();
+    result = right(argument);
   } else if(command == "stop") {
-    result = halt();
+    result = halt(argument);
   } else {
     result = "unknown command: " + command + ", arg: " + argument;
   }
@@ -87,7 +85,7 @@ String handleCommand(String input) {
   return result;
 }
 
-String forward()
+String forward(int speedInP87ercentage)
 {
   turnMotorsOn();
   
@@ -99,7 +97,7 @@ String forward()
   return "ok";
 }
 
-String backward()
+String backward(int argument)
 {
   turnMotorsOn();
   
@@ -111,7 +109,7 @@ String backward()
   return "ok";
 }
 
-String halt()
+String halt(int argument)
 {
   turnMotorsOff();
   
@@ -120,7 +118,7 @@ String halt()
 
 
 
-String left()
+String left(int argument)
 {
   turnMotorsOn();
 
@@ -136,7 +134,7 @@ String left()
   return "ok";
 }
 
-String right()
+String right(int argument)
 {
   turnMotorsOn();
 
@@ -152,7 +150,7 @@ String right()
   return "ok";
 }
 
-String checkBatteryStatus()
+String checkBatteryStatus(int argument)
 {
   return "battery status is " + String(random(0, 1));
 }
