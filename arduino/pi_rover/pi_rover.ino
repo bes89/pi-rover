@@ -7,7 +7,7 @@ AF_DCMotor motor4(4);
 
 int motorSpeed = 200;
 
-String command = "";
+String input = "";
   
 void setup()
 {
@@ -21,20 +21,52 @@ void loop()
   
   while(Serial.available()) {
     character = Serial.read();    
-    command.concat(character);
+    input.concat(character);
   }
 
-  if (command != "") {
-    String result = handleCommand(command);
+  if (input != "") {
+    String result = handleCommand(input);
     Serial.print(result + "\n");
-    command = "";
+    input = "";
   }
   
-  delay(250);
+  delay(100);
 }
 
-String handleCommand(String command) {
+String getCommandFromInput(String input) {
+  return input;
+}
+
+int getArgumentFromInput(String input) {
+
+  int result = -1;
+  
+  int positionOfColon = input.indexOf(':');
+  
+  Serial.print(String("Position of colon: ")+positionOfColon+"\n");
+  
+  if (positionOfColon)
+  {
+    int length = input.length() - positionOfColon;
+    
+    Serial.print(String("Length: ")+length+"\n");
+    
+    String argumentToBeParsedToInt = input.substring(positionOfColon);
+    
+    Serial.print(String("argumentToBeParsedToInt: ")+argumentToBeParsedToInt+"\n");
+    
+    //result = atoi(argumentToBeParsedToInt);
+  }
+ 
+  return result; 
+}
+
+
+String handleCommand(String input) {
   String result;
+  
+  String command = getCommandFromInput(input);
+  int argument = getArgumentFromInput(input);
   
   if(command == "check battery status") {
     result = checkBatteryStatus();
@@ -49,7 +81,7 @@ String handleCommand(String command) {
   } else if(command == "stop") {
     result = halt();
   } else {
-    result = "unknown command: " + command;
+    result = "unknown command: " + command + ", arg: " + argument;
   }
     
   return result;
