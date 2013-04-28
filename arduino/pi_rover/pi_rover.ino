@@ -5,7 +5,9 @@ AF_DCMotor motor2(2);
 AF_DCMotor motor3(3);
 AF_DCMotor motor4(4);
 
-int motorSpeed = 200;
+int motorSpeed = 100;
+bool isMovingForward = false;
+bool isMovingBackward = false;
 
 String input = "";
   
@@ -30,7 +32,7 @@ void loop()
     input = "";
   }
   
-  delay(100);
+  delay(250);
 }
 
 String getCommandFromInput(String input) {
@@ -59,6 +61,16 @@ int getArgumentFromInput(String input) {
   return result; 
 }
 
+void setMotorSpeed(int speedInPercentage) {
+  motorSpeed = map(
+    speedInPercentage,
+    0, 100,
+    0, 255
+  );
+  
+  Serial.print(String("Set speed to ") + motorSpeed + " ("+ speedInPercentage +"%)\n");
+}
+
 
 String handleCommand(String input) {
   String result;
@@ -85,8 +97,15 @@ String handleCommand(String input) {
   return result;
 }
 
-String forward(int speedInP87ercentage)
+String forward(int speedInPercentage)
 {
+  if (speedInPercentage > 0)
+  {
+    setMotorSpeed(speedInPercentage);
+  }
+  
+  isMovingForward = true;
+  
   turnMotorsOn();
   
   motor1.run(BACKWARD);
@@ -97,8 +116,15 @@ String forward(int speedInP87ercentage)
   return "ok";
 }
 
-String backward(int argument)
+String backward(int speedInPercentage)
 {
+  if (speedInPercentage > 0)
+  {
+    setMotorSpeed(speedInPercentage);
+  }
+  
+  isMovingBackward = true;
+  
   turnMotorsOn();
   
   motor1.run(FORWARD);
@@ -113,13 +139,19 @@ String halt(int argument)
 {
   turnMotorsOff();
   
+  isMovingForward = false;
+  isMovingBackward = false;
+  
   return "ok";
 }
 
 
 
-String left(int argument)
+String left(int speedInPercentage)
 {
+  int currentMotorSpeed = motorSpeed;
+  setMotorSpeed(100);
+  
   turnMotorsOn();
 
   motor1.run(FORWARD);
@@ -127,15 +159,26 @@ String left(int argument)
   motor3.run(FORWARD);
   motor4.run(BACKWARD);
 
-  delay(250);
+  delay(100);
 
-  turnMotorsOff();
+  motorSpeed = currentMotorSpeed;
+  
+  if (isMovingForward) {
+    forward(0);
+  } else if (isMovingBackward) {
+    backward(0); 
+  } else {
+    turnMotorsOff();
+  }
 
   return "ok";
 }
 
-String right(int argument)
+String right(int speedInPercentage)
 {
+  int currentMotorSpeed = motorSpeed;
+  setMotorSpeed(100);
+  
   turnMotorsOn();
 
   motor1.run(BACKWARD);
@@ -143,9 +186,17 @@ String right(int argument)
   motor3.run(BACKWARD);
   motor4.run(FORWARD);
 
-  delay(250);
+  delay(100);
 
-  turnMotorsOff();
+  motorSpeed = currentMotorSpeed;
+
+  if (isMovingForward) {
+    forward(0);
+  } else if (isMovingBackward) {
+    backward(0); 
+  } else {
+    turnMotorsOff();
+  }
 
   return "ok";
 }
