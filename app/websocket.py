@@ -3,10 +3,6 @@ from Robot import Robot
 
 
 def handle_websocket(ws):
-    """
-
-    :param ws:
-    """
     robot = Robot()
 
     while True:
@@ -17,21 +13,14 @@ def handle_websocket(ws):
             message = json.loads(message)
 
             command = message['command']
+            argument = -1
+            if 'argument' in message:
+                argument = message['argument']
 
-            if command == 'forward':
-                robot.forward()
+            if hasattr(robot, command):
+                result = getattr(robot, command)(argument)
+            else:
+                result = "Unknown command %s" % command
 
-            if command == 'backward':
-                robot.backward()
-
-            if command == 'stop':
-                robot.stop()
-
-            if command == 'left':
-                robot.left()
-
-            if command == 'right':
-                robot.right()
-
-            r = "Command from you : %s" % message['command']
+            r = "Command from you : %s, result: %s" % (message['command'], result)
             ws.send(json.dumps({'output': r}))
