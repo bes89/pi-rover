@@ -24,6 +24,7 @@ void loop()
   while(Serial.available()) {
     character = Serial.read();    
     input.concat(character);
+    delay(25);
   }
 
   if (input != "") {
@@ -31,8 +32,6 @@ void loop()
     Serial.print(result + "\n");
     input = "";
   }
-  
-  delay(250);
 }
 
 String getCommandFromInput(String input) {
@@ -153,13 +152,21 @@ String left(int speedInPercentage)
   setMotorSpeed(100);
   
   turnMotorsOn();
+  
+  bool turnToTheLeftSharply = speedInPercentage > 50;
+
+  if (turnToTheLeftSharply == false)
+  {
+    motor1.setSpeed(0);
+    motor4.setSpeed(0);
+  }
 
   motor1.run(FORWARD);
   motor2.run(BACKWARD);
   motor3.run(FORWARD);
   motor4.run(BACKWARD);
-
-  delay(100);
+  
+  delay(speedInPercentage);
 
   motorSpeed = currentMotorSpeed;
   
@@ -181,12 +188,20 @@ String right(int speedInPercentage)
   
   turnMotorsOn();
 
+  bool turnToTheRightSharply = speedInPercentage > 50;
+
+  if (turnToTheRightSharply == false)
+  {
+    motor2.setSpeed(0);
+    motor3.setSpeed(0);
+  }
+
   motor1.run(BACKWARD);
   motor2.run(FORWARD);
   motor3.run(BACKWARD);
   motor4.run(FORWARD);
 
-  delay(100);
+  delay(speedInPercentage);
 
   motorSpeed = currentMotorSpeed;
 
