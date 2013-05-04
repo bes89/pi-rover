@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!venv/bin/python
 # coding: utf-8
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
