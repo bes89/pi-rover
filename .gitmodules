@@ -1,0 +1,3 @@
+[submodule "app/static/js/virtualjoystick"]
+	path = app/static/js/virtualjoystick
+	url = git://github.com/jeromeetienne/virtualjoystick.js.git
