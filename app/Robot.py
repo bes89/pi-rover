@@ -8,26 +8,28 @@ class Robot:
         self.serialInterface = serial.Serial('/dev/ttyACM0', 9600)
 
     def forward(self, speedInPercentage):
-        print " forward"
-        self.serialInterface.write('forward:' + str(speedInPercentage))
+        return self.sendCommandToArduino('forward', speedInPercentage)
 
     def backward(self, speedInPercentage):
-        print " backward"
-        self.serialInterface.write('backward:' + str(speedInPercentage))
-
-    def turnAround(self):
-        print " turn around"
-        for x in range(1, 5):
-            self.serialInterface.write('left:100')
+        return self.sendCommandToArduino('backward', speedInPercentage)
 
     def stop(self, ignoredArgument):
-        print " stop"
-        self.serialInterface.write('stop')
+        return self.sendCommandToArduino('stop')
 
     def left(self, speedInPercentage):
-        print " left"
-        self.serialInterface.write('left:' + str(speedInPercentage))
+        return self.sendCommandToArduino('left', speedInPercentage)
 
     def right(self, speedInPercentage):
-        print " right"
-        self.serialInterface.write('right:' + str(speedInPercentage))
+        return self.sendCommandToArduino('right', speedInPercentage)
+
+    def sendCommandToArduino(self, cmd, arg=None):
+        if self.serialInterface.writable():
+            if arg is None:
+                arg = 0
+
+            print "cmd %s with %s ok" % (cmd, arg)
+            self.serialInterface.write(str(cmd) + ':' + str(arg))
+            return self.serialInterface.readline()
+        else:
+            print "cmd %s with %s failed" % (cmd, arg)
+            return "failed"
