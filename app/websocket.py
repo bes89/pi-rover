@@ -14,6 +14,7 @@ def handle_websocket(ws):
 
             command = message['command']
             argument = -1
+
             if 'argument' in message:
                 argument = message['argument']
 
@@ -22,5 +23,5 @@ def handle_websocket(ws):
             else:
                 result = "Unknown command %s" % command
 
-            r = "Command from you : %s, result: %s" % (message['command'], result)
+            r = "Command from you : %s (%s%%), result: %s" % (command, argument, result)
             ws.send(json.dumps({'output': r}))
