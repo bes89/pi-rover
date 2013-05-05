@@ -1,7 +1,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content='True' name='HandheldFriendly' />
+    <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
     <title>My PiRover</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
@@ -11,14 +13,36 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
+<div class="container">
+
     <div class="infoPanel">
-        <div id="inputFeedback"></div>
-        <div id="serverFeedback"></div>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar" type="button">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="#" class="brand">PiRover</a>
+                    <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li>
+                            <a href="#">
+                                <div id="inputFeedback"></div>
+                                <div id="serverFeedback"></div>
+                            </a>
+                        </li>
+                    </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="mainPanel">
         <div id="videoStream">
-            <video poster preload="true">
+            <video id="liveStream" poster preload="true">
                 <source src="http://www.besnik.de/alex-free-stock-video-footage-fullhd-swedish-street-october-2012.mp4" type="video/mp4">
             </video>
         </div>
@@ -27,16 +51,17 @@
     </div>
 
     <div class="controlPanel">
-        <button id="off" class="btn btn-primary" type="button">OFF</button>
+        <button id="off" class="btn btn-primary" type="button">Start live stream</button>
     </div>
+</div>
 
 <script>
     $(document).ready(function () {
         if ("WebSocket" in window) {
-            window.ws = new WebSocket("ws://" + document.domain + "/websocket");
+            window.ws = new WebSocket("ws://" + document.domain + ":5000/websocket");
             window.ws.onmessage = function (msg) {
                 var message = JSON.parse(msg.data);
-                $("#log").html(message.output);
+                $("#serverFeedback").html(message.output);
             };
         }
 
@@ -46,74 +71,113 @@
             }; // disable onclose handler first
             window.ws.close()
         };
+
+        $("#off").bind('click', function () {
+           callback();
+        });
     });
 </script>
 <script>
     console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+
+    var stopped = true;
+
     var joystick	= new VirtualJoystick({
         container	: document.getElementById('joystick'),
         mouseSupport	: true
     });
     setInterval(function () {
 
-        if (!joystick.up() && !joystick.down() && !joystick.left() && !joystick.right())
-        {
-            return;
-        }
-
-        var outputEl = document.getElementById('inputFeedback');
         var inputFeedback = "";
+        var outputEl = document.getElementById('inputFeedback');
 
-        if (joystick.up())
+        if (checkIfIsStopped(true))
         {
-            var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
-
-            window.ws.send(JSON.stringify({
-                'command': 'forward',
-                'argument': argument
-            }));
-            inputFeedback += inputFeedback == "" ? "" : " & ";
-            inputFeedback += "forward (" + argument + ")";
+            var inputFeedback = "stopped";
         }
-
-        if (joystick.down())
+        else
         {
-            var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
+            if (joystick.up())
+            {
+                var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
 
-            window.ws.send(JSON.stringify({
-                'command': 'backward',
-                'argument': argument
-            }));
-            inputFeedback += inputFeedback == "" ? "" : " & ";
-            inputFeedback += "backward (" + argument + ")";
-        }
+                window.ws.send(JSON.stringify({
+                    'command': 'forward',
+                    'argument': argument
+                }));
+                inputFeedback += inputFeedback == "" ? "" : " & ";
+                inputFeedback += "forward (" + argument + "%)";
+            }
 
-        if (joystick.left())
-        {
-            var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
+            if (joystick.down())
+            {
+                var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
 
-            window.ws.send(JSON.stringify({
-                'command': 'left',
-                'argument': argument
-            }));
-            inputFeedback += inputFeedback == "" ? "" : " & ";
-            inputFeedback += "left (" + argument + ")";
-        }
+                window.ws.send(JSON.stringify({
+                    'command': 'backward',
+                    'argument': argument
+                }));
+                inputFeedback += inputFeedback == "" ? "" : " & ";
+                inputFeedback += "backward (" + argument + "%)";
+            }
 
-        if (joystick.right())
-        {
-            var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
+            if (joystick.left())
+            {
+                var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
 
-            window.ws.send(JSON.stringify({
-                'command': 'right',
-                'argument': argument
-            }));
-            inputFeedback += inputFeedback == "" ? "" : " & ";
-            inputFeedback += "right (" + argument + ")";
+                window.ws.send(JSON.stringify({
+                    'command': 'left',
+                    'argument': argument
+                }));
+                inputFeedback += inputFeedback == "" ? "" : " & ";
+                inputFeedback += "left (" + argument + "%)";
+            }
+
+            if (joystick.right())
+            {
+                var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
+
+                window.ws.send(JSON.stringify({
+                    'command': 'right',
+                    'argument': argument
+                }));
+                inputFeedback += inputFeedback == "" ? "" : " & ";
+                inputFeedback += "right (" + argument + "%)";
+            }
+
         }
 
         outputEl.innerHTML = '<b>Result:</b> ' + inputFeedback;
-    }, 250);
+    }, 500);
+
+    function checkIfIsStopped(ignoreStoppedFlag) {
+        console.log('ignoreStoppedFlag: ' + ignoreStoppedFlag);
+
+        if (ignoreStoppedFlag == false && window.stopped == true)
+        {
+            return true;
+        }
+
+        if (!joystick.up() && !joystick.down() && !joystick.left() && !joystick.right())
+        {
+            if (window.stopped == false)
+            {
+                console.log('stopped!');
+                window.ws.send(JSON.stringify({
+                    'command': 'stop',
+                    'argument': 0
+                }));
+            }
+
+            window.stopped = true;
+            return true;
+        }
+
+        window.stopped = false;
+        return false;
+    }
+
+    setInterval('checkIfIsStopped(false)', 150);
 
     function convertStickDistanceToArgument(xValue, yValue, container)
     {
@@ -121,14 +185,15 @@
 
         if (xValue)
         {
+            xValue = xValue * 6;
             result = xValue / (container.offsetWidth/100);
         }
         else if(yValue)
         {
+            yValue = yValue * 2;
             result = yValue / (container.offsetHeight/100);
         }
 
-        result *= 2;
         if (result < 0)
         {
             result *= -1;
@@ -142,13 +207,12 @@
         return result;
     }
 
-    /*
     function callback() {
-        document.getElementsByName('video')[0].play();
+        document.getElementById("liveStream").play();
     }
-
+/*
     window.addEventListener("load", callback, false);
-    */
+*/
 </script>
 
 </body>
