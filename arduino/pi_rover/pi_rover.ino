@@ -24,7 +24,7 @@ void loop()
   while(Serial.available()) {
     character = Serial.read();    
     input.concat(character);
-    delay(25);
+    delay(2);
   }
 
   if (input != "") {
@@ -136,6 +136,23 @@ String backward(int speedInPercentage)
 
 String halt(int argument)
 {
+  int currentMotorSpeedInPercentage = map(
+    motorSpeed,
+    0, 255,
+    0, 100
+  );
+  
+  if (isMovingForward)
+  {
+    backward(80);
+    delay(currentMotorSpeedInPercentage * 2);
+  }
+  else if(isMovingBackward)
+  {
+    forward(80);
+    delay(currentMotorSpeedInPercentage * 2);
+  }
+  
   turnMotorsOff();
   
   isMovingForward = false;
