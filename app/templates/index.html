@@ -81,6 +81,10 @@
     console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 
     var stopped = true;
+    var isMovingForward = false;
+    var isMovingBackward = false;
+    var currentSpeed;
+
 
     var joystick	= new VirtualJoystick({
         container	: document.getElementById('joystick'),
@@ -101,24 +105,36 @@
             {
                 var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
 
-                window.ws.send(JSON.stringify({
-                    'command': 'forward',
-                    'argument': argument
-                }));
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "forward (" + argument + "%)";
+                if (isMovingForward == false || (isMovingForward == true && currentSpeed != argument))
+                {
+                    window.ws.send(JSON.stringify({
+                        'command': 'forward',
+                        'argument': argument
+                    }));
+                    inputFeedback += inputFeedback == "" ? "" : " & ";
+                    inputFeedback += "forward (" + argument + "%)";
+
+                    isMovingForward = true;
+                    currentSpeed = argument;
+                }
             }
 
             if (joystick.down())
             {
                 var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
 
-                window.ws.send(JSON.stringify({
-                    'command': 'backward',
-                    'argument': argument
-                }));
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "backward (" + argument + "%)";
+                if (isMovingBackward == false || (isMovingBackward == true && currentSpeed != argument))
+                {
+                    window.ws.send(JSON.stringify({
+                        'command': 'backward',
+                        'argument': argument
+                    }));
+                    inputFeedback += inputFeedback == "" ? "" : " & ";
+                    inputFeedback += "backward (" + argument + "%)";
+
+                    isMovingBackward = false;
+                    currentSpeed = argument;
+                }
             }
 
             if (joystick.left())
