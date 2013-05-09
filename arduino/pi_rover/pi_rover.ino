@@ -6,6 +6,12 @@ AF_DCMotor motor2(2);
 AF_DCMotor motor3(3);
 AF_DCMotor motor4(4);
 
+#define TRIGGER_PIN  2
+#define ECHO_PIN     13
+#define MAX_DISTANCE 200
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+
 int motorSpeed = 100;
 bool isMovingForward = false;
 bool isMovingBackward = false;
@@ -80,6 +86,8 @@ String handleCommand(String input) {
   
   if(command == "battery") {
     result = checkBatteryStatus(argument);
+  } else if(command == "distance") {
+    result = getDistance(argument);
   } else if(command == "forward") {
     result = forward(argument);
   } else if(command == "backward") {
@@ -271,4 +279,9 @@ void turnMotorsOn()
   motor2.setSpeed(motorSpeed);
   motor3.setSpeed(motorSpeed);
   motor4.setSpeed(motorSpeed);
+}
+
+String getDistance(int argument) {
+  unsigned int uS = sonar.ping();
+  return String("Ping: ") + String(uS / US_ROUNDTRIP_CM) + String("cm");
 }
