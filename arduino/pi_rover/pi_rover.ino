@@ -1,4 +1,5 @@
 #include <AFMotor.h>
+#include <NewPing.h>
 
 AF_DCMotor motor1(1);
 AF_DCMotor motor2(2);
@@ -77,7 +78,7 @@ String handleCommand(String input) {
   String command = getCommandFromInput(input);
   int argument = getArgumentFromInput(input);
   
-  if(command == "check battery status") {
+  if(command == "battery") {
     result = checkBatteryStatus(argument);
   } else if(command == "forward") {
     result = forward(argument);
@@ -235,7 +236,25 @@ String right(int speedInPercentage)
 
 String checkBatteryStatus(int argument)
 {
-  return "battery status is " + String(random(0, 1));
+  int counter = 0;
+  for (int i = 0; i <= 3; i++) {
+    int value = analogRead(0);
+    if (value < 10) {
+      counter = counter + 1;
+    }
+      
+    delay(1000);
+  }
+  
+  String result;
+  
+  if (counter > 2) {
+    result = "low";
+  } else {
+    result = "ok";
+  }
+  
+  return result;
 }
 
 void turnMotorsOff()
