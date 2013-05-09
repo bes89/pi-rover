@@ -179,7 +179,7 @@ String left(int speedInPercentage)
   
   turnMotorsOn();
   
-  bool turnToTheLeftSharply = speedInPercentage > 50;
+  bool turnToTheLeftSharply = speedInPercentage > 25;
 
   if (turnToTheLeftSharply == false)
   {
@@ -192,7 +192,7 @@ String left(int speedInPercentage)
   motor3.run(FORWARD);
   motor4.run(BACKWARD);
   
-  delay(speedInPercentage);
+  delay(speedInPercentage * 2);
 
   motorSpeed = currentMotorSpeed;
   
@@ -214,7 +214,7 @@ String right(int speedInPercentage)
   
   turnMotorsOn();
 
-  bool turnToTheRightSharply = speedInPercentage > 50;
+  bool turnToTheRightSharply = speedInPercentage > 25;
 
   if (turnToTheRightSharply == false)
   {
@@ -227,7 +227,7 @@ String right(int speedInPercentage)
   motor3.run(BACKWARD);
   motor4.run(FORWARD);
 
-  delay(speedInPercentage);
+  delay(speedInPercentage * 2);
 
   motorSpeed = currentMotorSpeed;
 
