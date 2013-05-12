@@ -52,10 +52,22 @@ void loop()
       500, 0
     );
     
+    int distanceToStop = map(
+      motorSpeed,
+      0, 255,
+      15, 50
+    );
+    
     runEvery(checkDistanceInterval) {
-      if (isMovingForward && getDistanceInCm() < 15) {
+      if (isMovingForward && getDistanceInCm() < distanceToStop) {
           halt(0);
+          Serial.print("Stopped by 'Safety drive'");
       }
+    }
+    
+    runEvery(2000) {
+      Serial.print("Safety drive: check interval "+String(checkDistanceInterval)+
+      ", distance to stop: "+String(distanceToStop)+"\n");
     }
   }
 }
