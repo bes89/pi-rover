@@ -17,6 +17,7 @@ AF_DCMotor motor4(4);
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 int motorSpeed = 100;
+int maxMotorSpeed = 250;
 bool isMovingForward = false;
 bool isMovingBackward = false;
 bool safetyDriveMode = true;
@@ -48,13 +49,13 @@ void loop()
   if (safetyDriveMode) {
     int checkDistanceInterval = map(
       motorSpeed,
-      0, 255,
+      0, maxMotorSpeed,
       500, 0
     );
     
     int distanceToStop = map(
       motorSpeed,
-      0, 255,
+      0, maxMotorSpeed,
       15, 50
     );
     
@@ -102,7 +103,7 @@ void setMotorSpeed(int speedInPercentage) {
   motorSpeed = map(
     speedInPercentage,
     0, 100,
-    0, 255
+    0, maxMotorSpeed
   );
   
   Serial.print(String("Set speed to ") + motorSpeed + " ("+ speedInPercentage +"%)\n");
@@ -178,7 +179,7 @@ String halt(int argument)
 {
   int currentMotorSpeedInPercentage = map(
     motorSpeed,
-    0, 255,
+    0, maxMotorSpeed,
     0, 100
   );
   
