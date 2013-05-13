@@ -1,7 +1,7 @@
 import serial
 
 
-class Robot:
+class Rover:
     serialInterface = None
 
     def __init__(self):

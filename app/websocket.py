@@ -1,9 +1,9 @@
 import json
-from Robot import Robot
+from Rover import Rover
 
 
 def handle_websocket(ws):
-    robot = Robot()
+    pirover = Rover()
 
     while True:
         message = ws.receive()
@@ -18,8 +18,8 @@ def handle_websocket(ws):
             if 'argument' in message:
                 argument = message['argument']
 
-            if hasattr(robot, command):
-                result = getattr(robot, command)(argument)
+            if hasattr(pirover, command):
+                result = getattr(pirover, command)(argument)
             else:
                 result = "Unknown command %s" % command
 
