@@ -1,0 +1,32 @@
+html, body {
+    padding: 0;
+    margin: 0;
+}
+.infoPanel {
+}
+.mainPanel {
+    background-color: #000000;
+    position: relative;
+    margin-top: 40px;
+    width:100%;
+    height:100%;
+}
+#joystick, #videoStream {
+    top: 0;
+    height: 100%;
+    position: absolute;
+}
+#joystick {
+    opacity: 0.75;
+    z-index: 2;
+    position: absolute;
+}
+.controlPanel {
+    background-color: red;
+    position: fixed;
+    bottom: 0;
+    z-index: 3;
+}
+.clear {
+    clear: both;
+}
