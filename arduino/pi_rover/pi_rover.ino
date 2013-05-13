@@ -17,10 +17,11 @@ AF_DCMotor motor4(4);
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 int motorSpeed = 100;
-int maxMotorSpeed = 250;
+int maxMotorSpeed = 255;
 bool isMovingForward = false;
 bool isMovingBackward = false;
 bool safetyDriveMode = true;
+bool debugMode = false;
 
 String input = "";
   
@@ -50,7 +51,7 @@ void loop()
     int checkDistanceInterval = map(
       motorSpeed,
       0, maxMotorSpeed,
-      500, 0
+      500, 100
     );
     
     int distanceToStop = map(
@@ -60,15 +61,23 @@ void loop()
     );
     
     runEvery(checkDistanceInterval) {
-      if (isMovingForward && getDistanceInCm() < distanceToStop) {
+      if (isMovingForward) {
+        int distanceInCm = getDistanceInCm();
+        
+        if (distanceInCm != NO_ECHO && distanceInCm < distanceToStop) {
           halt(0);
-          Serial.print("Stopped by 'Safety drive'");
+          if (debugMode) {
+            Serial.print("Stopped by 'Safety drive'");
+          }
+        }
       }
     }
-    
-    runEvery(2000) {
-      Serial.print("Safety drive: check interval "+String(checkDistanceInterval)+
-      ", distance to stop: "+String(distanceToStop)+"\n");
+
+    if (debugMode) {
+      runEvery(2000) {
+        Serial.print("Safety drive: check interval "+String(checkDistanceInterval)+
+        ", distance to stop: "+String(distanceToStop)+"\n");
+      }
     }
   }
 }
@@ -105,8 +114,10 @@ void setMotorSpeed(int speedInPercentage) {
     0, 100,
     0, maxMotorSpeed
   );
-  
-  Serial.print(String("Set speed to ") + motorSpeed + " ("+ speedInPercentage +"%)\n");
+
+  if (debugMode) {
+    Serial.print(String("Set speed to ") + motorSpeed + " ("+ speedInPercentage +"%)\n");
+  }
 }
 
 
@@ -130,6 +141,8 @@ String handleCommand(String input) {
     result = right(argument);
   } else if(command == "stop") {
     result = halt(argument);
+  } else if(command == "debug") {
+    result = debug(argument);
   } else {
     result = "unknown command: " + command + ", arg: " + argument;
   }
@@ -198,7 +211,7 @@ String halt(int argument)
   
   isMovingForward = false;
   isMovingBackward = false;
-  
+
   return "ok";
 }
 
@@ -297,12 +310,27 @@ String checkBatteryStatus(int argument)
   return result;
 }
 
+String debug(int argument) {
+  if (argument == 1) {
+    debugMode = true;
+  } else {
+    debugMode = false;
+  }
+
+  return "ok";
+}
+
 void turnMotorsOff()
 {
   motor1.setSpeed(0);
   motor2.setSpeed(0);
   motor3.setSpeed(0);
   motor4.setSpeed(0);
+
+  motor1.run(RELEASE);
+  motor2.run(RELEASE);
+  motor3.run(RELEASE);
+  motor4.run(RELEASE);
 }
 
 void turnMotorsOn()
@@ -318,6 +346,5 @@ String measureDistance(int argument) {
 }
 
 int getDistanceInCm() {
-  unsigned int uS = sonar.ping();
-  return uS / US_ROUNDTRIP_CM;
+  return sonar.ping_cm();
 }
