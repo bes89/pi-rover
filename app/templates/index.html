@@ -166,9 +166,8 @@
         outputEl.innerHTML = '<b>Result:</b> ' + inputFeedback;
     }, 500);
 
-    function checkIfIsStopped(ignoreStoppedFlag) {
-        console.log('ignoreStoppedFlag: ' + ignoreStoppedFlag);
-
+    function checkIfIsStopped(ignoreStoppedFlag)
+    {
         if (ignoreStoppedFlag == false && window.stopped == true)
         {
             return true;
@@ -178,7 +177,6 @@
         {
             if (window.stopped == false)
             {
-                console.log('stopped!');
                 window.ws.send(JSON.stringify({
                     'command': 'stop',
                     'argument': 0
