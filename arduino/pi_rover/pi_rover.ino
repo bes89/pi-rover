@@ -127,24 +127,33 @@ String handleCommand(String input) {
   String command = getCommandFromInput(input);
   int argument = getArgumentFromInput(input);
   
-  if(command == "battery") {
-    result = checkBatteryStatus(argument);
-  } else if(command == "distance") {
-    result = measureDistance(argument);
-  } else if(command == "forward") {
-    result = forward(argument);
-  } else if(command == "backward") {
-    result = backward(argument);
-  } else if(command == "left") {
-    result = left(argument);
-  } else if(command == "right") {
-    result = right(argument);
-  } else if(command == "stop") {
-    result = halt(argument);
-  } else if(command == "debug") {
-    result = debug(argument);
-  } else {
-    result = "unknown command: " + command + ", arg: " + argument;
+  switch (command) {
+    case "battery":
+      result = checkBatteryStatus(argument);
+      break;
+    case "distance":
+      result = measureDistance(argument);
+      break;
+    case "forward":
+      result = forward(argument);
+      break;
+    case "backward":
+      result = backward(argument);
+      break;
+    case "left":
+      result = left(argument);
+      break;
+    case "right":
+      result = right(argument);
+      break;
+    case "stop":
+      result = halt(argument);
+      break;
+    case "debug":
+      result = debug(argument);
+      break;
+    default:
+      result = "unknown command: " + command + ", arg: " + argument;
   }
     
   return result;
