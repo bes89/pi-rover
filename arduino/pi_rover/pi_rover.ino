@@ -1,5 +1,6 @@
 #include <AFMotor.h>
 #include <NewPing.h>
+#include <Servo.h> 
 
 #define runEvery(t) for (static typeof(t) _lasttime;\
                          (typeof(t))((typeof(t))millis() - _lasttime) > (t);\
@@ -23,12 +24,30 @@ bool isMovingBackward = false;
 bool safetyDriveMode = true;
 bool debugMode = false;
 
+int ledPin = 10;
+
 String input = "";
+  
+// DC hobby servo
+Servo servo;
   
 void setup()
 {
   Serial.begin(9600);
   Serial.print("Ready\n");
+  pinMode(ledPin, OUTPUT);
+  
+  servo.attach(9);
+  
+  servo.write(0);
+  delay(500);
+  servo.write(180);
+  delay(500);
+  servo.write(90);
+  
+  delay(350);
+  
+  servo.detach();
 }
 
 void loop()
@@ -131,6 +150,8 @@ String handleCommand(String input) {
     result = checkBatteryStatus(argument);
   } else if(command == "distance") {
     result = measureDistance(argument);
+  } else if(command == "look") {
+    result = lookDirection(argument);
   } else if(command == "forward") {
     result = forward(argument);
   } else if(command == "backward") {
@@ -147,6 +168,45 @@ String handleCommand(String input) {
     result = "unknown command: " + command + ", arg: " + argument;
   }
     
+  return result;
+}
+
+String lookDirection(int argument) {
+  String result;
+  
+  Serial.print("arg: " +String(argument)+ "\n");
+  
+  if (argument >= 0 && argument <= 180) {
+  
+    digitalWrite(ledPin, HIGH);
+   
+    if (servo.attached() == false) {
+      servo.attach(9);
+    }
+
+    int waitTimeInMs;
+    
+    if (servo.read() > argument) {
+      waitTimeInMs = servo.read() - argument;
+    } else {
+      waitTimeInMs = servo.read() + argument;
+    }
+
+    servo.write(argument);
+    
+    Serial.print(waitTimeInMs);
+    
+    delay(waitTimeInMs * 3);
+    
+    servo.detach();
+    
+    digitalWrite(ledPin, LOW);
+    
+    result = "ok";
+  } else {
+    result = "failed";
+  }
+  
   return result;
 }
 
