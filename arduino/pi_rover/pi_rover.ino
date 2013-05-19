@@ -76,7 +76,7 @@ void loop()
     int distanceToStop = map(
       motorSpeed,
       0, maxMotorSpeed,
-      15, 50
+      15, 60
     );
     
     runEvery(checkDistanceInterval) {
