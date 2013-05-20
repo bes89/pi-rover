@@ -5,7 +5,7 @@ This repository provides a ready-to-use micro-framework based on Python, C++, Ja
 
 ## Features
 
-## Required Hareware
+## Required Hardware
 
 ## How to install
 
