@@ -173,9 +173,9 @@ String handleCommand(String input) {
 
 String lookDirection(int argument) {
   String result;
-  
+
   Serial.print("arg: " +String(argument)+ "\n");
-  
+
   if (argument >= 0 && argument <= 180) {
   
     digitalWrite(ledPin, HIGH);
@@ -221,10 +221,10 @@ String forward(int speedInPercentage)
   
   turnMotorsOn();
   
-  motor1.run(BACKWARD);
-  motor2.run(BACKWARD);
-  motor3.run(FORWARD);
-  motor4.run(FORWARD);
+  motor1.run(FORWARD);
+  motor2.run(FORWARD);
+  motor3.run(BACKWARD);
+  motor4.run(BACKWARD);
   
   return "ok";
 }
@@ -239,11 +239,11 @@ String backward(int speedInPercentage)
   isMovingBackward = true;
   
   turnMotorsOn();
-  
-  motor1.run(FORWARD);
-  motor2.run(FORWARD);
-  motor3.run(BACKWARD);
-  motor4.run(BACKWARD);
+
+  motor1.run(BACKWARD);
+  motor2.run(BACKWARD);
+  motor3.run(FORWARD);
+  motor4.run(FORWARD);
   
   return "ok";
 }
