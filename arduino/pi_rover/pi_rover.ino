@@ -173,9 +173,7 @@ String handleCommand(String input) {
 
 String lookDirection(int argument) {
   String result;
-
-  Serial.print("arg: " +String(argument)+ "\n");
-
+  
   if (argument >= 0 && argument <= 180) {
   
     digitalWrite(ledPin, HIGH);
