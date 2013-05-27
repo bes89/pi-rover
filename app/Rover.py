@@ -22,6 +22,9 @@ class Rover:
     def right(self, speedInPercentage):
         return self.sendCommandToArduino('right', speedInPercentage)
 
+    def look(self, inDegrees):
+        return self.sendCommandToArduino('look', inDegrees)
+
     def sendCommandToArduino(self, cmd, arg=None):
         if self.serialInterface.writable():
             if arg is None:
