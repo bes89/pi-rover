@@ -10,7 +10,7 @@
     <script src="{{ url_for('static', filename='js/jquery-1.8.2.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/virtualjoystick/virtualjoystick.js') }}"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="{{ url_for('static', filename='js/pirover.js') }}"></script>
 </head>
 <body>
 <div class="container">
@@ -43,7 +43,7 @@
     <div class="mainPanel">
         <div id="videoStream">
             <video id="liveStream" poster preload="true">
-                <source src="http://www.besnik.de/alex-free-stock-video-footage-fullhd-swedish-street-october-2012.mp4" type="video/mp4">
+                <source src="#" type="video/mp4">
             </video>
         </div>
         <div id="joystick">
@@ -56,177 +56,9 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        if ("WebSocket" in window) {
-            window.ws = new WebSocket("ws://" + document.domain + ":5000/websocket");
-            window.ws.onmessage = function (msg) {
-                var message = JSON.parse(msg.data);
-                $("#serverFeedback").html(message.output);
-            };
-        }
+    var rover = new PiRover();
 
-        // Cleanly close websocket when unload window
-        window.onbeforeunload = function () {
-            window.ws.onclose = function () {
-            }; // disable onclose handler first
-            window.ws.close()
-        };
-
-        $("#off").bind('click', function () {
-           callback();
-        });
-    });
-</script>
-<script>
-    console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
-
-    var stopped = true;
-    var isMovingForward = false;
-    var isMovingBackward = false;
-    var currentSpeed;
-
-
-    var joystick	= new VirtualJoystick({
-        container	: document.getElementById('joystick'),
-        mouseSupport	: true
-    });
-    setInterval(function () {
-
-        var inputFeedback = "";
-        var outputEl = document.getElementById('inputFeedback');
-
-        if (checkIfIsStopped(true))
-        {
-            var inputFeedback = "stopped";
-        }
-        else
-        {
-            if (joystick.up())
-            {
-                var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
-
-                if (isMovingForward == false || (isMovingForward == true && currentSpeed != argument))
-                {
-                    window.ws.send(JSON.stringify({
-                        'command': 'forward',
-                        'argument': argument
-                    }));
-                    inputFeedback += inputFeedback == "" ? "" : " & ";
-                    inputFeedback += "forward (" + argument + "%)";
-
-                    isMovingForward = true;
-                    currentSpeed = argument;
-                }
-            }
-
-            if (joystick.down())
-            {
-                var argument = convertStickDistanceToArgument(false, joystick.deltaY(), joystick._container);
-
-                if (isMovingBackward == false || (isMovingBackward == true && currentSpeed != argument))
-                {
-                    window.ws.send(JSON.stringify({
-                        'command': 'backward',
-                        'argument': argument
-                    }));
-                    inputFeedback += inputFeedback == "" ? "" : " & ";
-                    inputFeedback += "backward (" + argument + "%)";
-
-                    isMovingBackward = false;
-                    currentSpeed = argument;
-                }
-            }
-
-            if (joystick.left())
-            {
-                var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
-
-                window.ws.send(JSON.stringify({
-                    'command': 'left',
-                    'argument': argument
-                }));
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "left (" + argument + "%)";
-            }
-
-            if (joystick.right())
-            {
-                var argument = convertStickDistanceToArgument(false, joystick.deltaX(), joystick._container);
-
-                window.ws.send(JSON.stringify({
-                    'command': 'right',
-                    'argument': argument
-                }));
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "right (" + argument + "%)";
-            }
-
-        }
-
-        outputEl.innerHTML = '<b>Result:</b> ' + inputFeedback;
-    }, 500);
-
-    function checkIfIsStopped(ignoreStoppedFlag)
-    {
-        if (ignoreStoppedFlag == false && window.stopped == true)
-        {
-            return true;
-        }
-
-        if (!joystick.up() && !joystick.down() && !joystick.left() && !joystick.right())
-        {
-            if (window.stopped == false)
-            {
-                window.ws.send(JSON.stringify({
-                    'command': 'stop',
-                    'argument': 0
-                }));
-            }
-
-            window.stopped = true;
-            return true;
-        }
-
-        window.stopped = false;
-        return false;
-    }
-
-    setInterval('checkIfIsStopped(false)', 150);
-
-    function convertStickDistanceToArgument(xValue, yValue, container)
-    {
-        var result = false;
-
-        if (xValue)
-        {
-            xValue = xValue * 6;
-            result = xValue / (container.offsetWidth/100);
-        }
-        else if(yValue)
-        {
-            yValue = yValue * 2;
-            result = yValue / (container.offsetHeight/100);
-        }
-
-        if (result < 0)
-        {
-            result *= -1;
-        }
-        if (result > 100)
-        {
-            result = 100;
-        }
-        result = Math.round(result);
-
-        return result;
-    }
-
-    function callback() {
-        document.getElementById("liveStream").play();
-    }
-/*
-    window.addEventListener("load", callback, false);
-*/
+    rover.init();
 </script>
 
 </body>
