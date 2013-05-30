@@ -9,11 +9,11 @@ html, body {
     position: relative;
     margin-top: 40px;
     width:100%;
-    height:100%;
+    height:90%;
 }
 #joystick, #videoStream {
     top: 0;
-    height: 100%;
+    height: 95%;
     position: absolute;
 }
 #joystick {
@@ -22,10 +22,17 @@ html, body {
     position: absolute;
 }
 .controlPanel {
-    background-color: red;
-    position: fixed;
-    bottom: 0;
+    position: relative;
+    top: -50px;
     z-index: 3;
+    padding: 0 2%;
+    width: 96%;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
 }
 .clear {
     clear: both;

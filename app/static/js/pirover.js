@@ -11,7 +11,10 @@ var PiRover	= function(options) {
 
     this.debug = false;
 
+    this.lookMode = false;
+
     this.options = options;
+
     this.init = function() {
 
         var self = this;
@@ -114,7 +117,23 @@ var PiRover	= function(options) {
 
         }
 
-        outputEl.innerHTML = '<b>Result:</b> ' + inputFeedback;
+        outputEl.innerHTML = '<b>Input:</b> ' + inputFeedback;
+    }
+
+    this.suspend = function() {
+
+    }
+
+    this.turnOff = function() {
+
+    }
+
+    this.checkBatteryStatus = function() {
+
+    }
+
+    this.measureDistance = function() {
+
     }
 
     this.checkIfIsStopped = function checkIfIsStopped(ignoreStoppedFlag) {

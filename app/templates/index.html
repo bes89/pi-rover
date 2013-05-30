@@ -51,7 +51,16 @@
     </div>
 
     <div class="controlPanel">
-        <button id="off" class="btn btn-primary" type="button">Start live stream</button>
+        <div>
+            <div class="left" style="width: 80%">
+                <button id="ping" class="btn btn-primary" type="button">Ping</button>
+                <button id="lookMode" class="btn btn-primary" type="button">Look mode</button>
+            </div>
+            <div class="right" style="text-align: right; width: 20%">
+                <button id="turnOff" class="btn btn-danger" type="button">Turn off</button>
+            </div>
+            <div class="clear"></div>
+        </div>
     </div>
 </div>
 
@@ -59,6 +68,26 @@
     var rover = new PiRover();
 
     rover.init();
+
+    $("#ping").bind("click", function () {
+        var distance = rover.measureDistance();
+    });
+
+    $("#lookMode").bind("click", function () {
+        if (rover.lookMode == false) {
+            rover.lookMode = true;
+            $(this).addClass("btn-info");
+            $(this).removeClass("btn-primary");
+        } else {
+            rover.lookMode = false;
+            $(this).addClass("btn-primary");
+            $(this).removeClass("btn-info");
+        }
+    });
+
+    $("#turnOff").bind("click", function () {
+        rover.turnOff();
+    });
 </script>
 
 </body>
