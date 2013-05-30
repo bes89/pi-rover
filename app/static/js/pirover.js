@@ -11,6 +11,7 @@ var PiRover	= function(options) {
 
     this.debug = false;
 
+    this.lookingDirectionDegrees = 90;
     this.lookMode = false;
 
     this.options = options;
@@ -60,7 +61,7 @@ var PiRover	= function(options) {
         if (this.checkIfIsStopped(true)) {
             var inputFeedback = "stopped";
         } else {
-            if (this.joystick.up()) {
+            if (this.joystick.up() && this.lookMode == false) {
                 var argument = this.convertStickDistanceToArgument(false, this.joystick.deltaY(), this.joystick._container);
 
                 if (this.isMovingForward == false || (this.isMovingForward == true && this.currentSpeed != argument)) {
@@ -76,7 +77,7 @@ var PiRover	= function(options) {
                 }
             }
 
-            if (this.joystick.down()) {
+            if (this.joystick.down() && this.lookMode == false) {
                 var argument = this.convertStickDistanceToArgument(false, this.joystick.deltaY(), this.joystick._container);
 
                 if (this.isMovingBackward == false || (this.isMovingBackward == true && this.currentSpeed != argument)) {
@@ -95,26 +96,62 @@ var PiRover	= function(options) {
             if (this.joystick.left()) {
                 var argument = this.convertStickDistanceToArgument(false, this.joystick.deltaX(), this.joystick._container);
 
-                this.websocket.send(JSON.stringify({
-                    'command': 'left',
-                    'argument': argument
-                }));
+                if (this.lookMode)
+                {
+                    var degree = this.map(argument, 0, 100, 90, 0);
 
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "left (" + argument + "%)";
+                    if (this.lookingDirectionDegrees != degree) {
+                        this.lookingDirectionDegrees = degree;
+
+                        this.websocket.send(JSON.stringify({
+                            'command': 'look',
+                            'argument': degree
+                        }));
+                    }
+
+                    inputFeedback += "look left (" + argument + "%)";
+                }
+                else
+                {
+                    this.websocket.send(JSON.stringify({
+                        'command': 'left',
+                        'argument': argument
+                    }));
+
+                    inputFeedback += inputFeedback == "" ? "" : " & ";
+                    inputFeedback += "left (" + argument + "%)";
+                }
             }
 
             if (this.joystick.right()) {
                 var argument = this.convertStickDistanceToArgument(false, this.joystick.deltaX(), this.joystick._container);
 
-                this.websocket.send(JSON.stringify({
-                    'command': 'right',
-                    'argument': argument
-                }));
-                inputFeedback += inputFeedback == "" ? "" : " & ";
-                inputFeedback += "right (" + argument + "%)";
-            }
+                if (this.lookMode)
+                {
+                    var degree = this.map(argument, 0, 100, 90, 180);
 
+                    if (this.lookingDirectionDegrees != degree) {
+                        this.lookingDirectionDegrees = degree;
+
+                        this.websocket.send(JSON.stringify({
+                            'command': 'look',
+                            'argument': degree
+                        }));
+                    }
+
+                    inputFeedback += "look right (" + argument + "%)";
+                }
+                else
+                {
+                    this.websocket.send(JSON.stringify({
+                        'command': 'right',
+                        'argument': argument
+                    }));
+
+                    inputFeedback += inputFeedback == "" ? "" : " & ";
+                    inputFeedback += "right (" + argument + "%)";
+                }
+            }
         }
 
         outputEl.innerHTML = '<b>Input:</b> ' + inputFeedback;
@@ -143,15 +180,24 @@ var PiRover	= function(options) {
         }
 
         if (!this.joystick.up() && !this.joystick.down() && !this.joystick.left() && !this.joystick.right()) {
-            if (this.stopped == false) {
-                this.websocket.send(JSON.stringify({
-                    'command': 'stop',
-                    'argument': 0
-                }));
-            }
 
-            this.stopped = true;
-            return true;
+            if (this.lookMode && this.lookingDirectionDegrees != 90) {
+                this.websocket.send(JSON.stringify({
+                    'command': 'look',
+                    'argument': 90
+                }));
+                this.lookingDirectionDegrees = 90;
+            } else {
+                if (this.stopped == false) {
+                    this.websocket.send(JSON.stringify({
+                        'command': 'stop',
+                        'argument': 0
+                    }));
+                }
+
+                this.stopped = true;
+                return true;
+            }
         }
 
         this.stopped = false;
@@ -178,6 +224,10 @@ var PiRover	= function(options) {
         result = Math.round(result);
 
         return result;
+    }
+
+    this.map = function (value, range1From, range1To, range2From, range2To) {
+        return range2From + ((range2To - range2From) / (range1To - range1From)) * (value - range1From)
     }
 
     this.log = function(message) {
