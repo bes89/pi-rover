@@ -289,71 +289,39 @@ String halt(int argument)
 
 String left(int speedInPercentage)
 {
-  int currentMotorSpeed = motorSpeed;
-  setMotorSpeed(100);
-  
+  int currentMotorSpeedInPercentage = map(
+    motorSpeed,
+    0, maxMotorSpeed,
+    0, 100
+  );
+
+  // reset the speed of all motors to "motorSpeed"
   turnMotorsOn();
+
+  int speedOfLeftMotors = ((float) currentMotorSpeedInPercentage / 100) * speedInPercentage;
+
+  motor2.setSpeed(speedOfLeftMotors);
+  motor3.setSpeed(speedOfLeftMotors);
   
-  bool turnToTheLeftSharply = speedInPercentage > 25;
-
-  if (turnToTheLeftSharply == false)
-  {
-    motor1.setSpeed(0);
-    motor4.setSpeed(0);
-  }
-
-  motor1.run(FORWARD);
-  motor2.run(BACKWARD);
-  motor3.run(FORWARD);
-  motor4.run(BACKWARD);
-  
-  delay(speedInPercentage * 2);
-
-  motorSpeed = currentMotorSpeed;
-  
-  if (isMovingForward) {
-    forward(0);
-  } else if (isMovingBackward) {
-    backward(0); 
-  } else {
-    turnMotorsOff();
-  }
-
   return "ok";
 }
 
 String right(int speedInPercentage)
 {
-  int currentMotorSpeed = motorSpeed;
-  setMotorSpeed(100);
-  
+  int currentMotorSpeedInPercentage = map(
+    motorSpeed,
+    0, maxMotorSpeed,
+    0, 100
+  );
+
+  // reset the speed of all motors to "motorSpeed"
   turnMotorsOn();
 
-  bool turnToTheRightSharply = speedInPercentage > 25;
+  int speedOfRightMotors = ((float) currentMotorSpeedInPercentage / 100) * speedInPercentage;
 
-  if (turnToTheRightSharply == false)
-  {
-    motor2.setSpeed(0);
-    motor3.setSpeed(0);
-  }
-
-  motor1.run(BACKWARD);
-  motor2.run(FORWARD);
-  motor3.run(BACKWARD);
-  motor4.run(FORWARD);
-
-  delay(speedInPercentage * 2);
-
-  motorSpeed = currentMotorSpeed;
-
-  if (isMovingForward) {
-    forward(0);
-  } else if (isMovingBackward) {
-    backward(0); 
-  } else {
-    turnMotorsOff();
-  }
-
+  motor1.setSpeed(speedOfRightMotors);
+  motor4.setSpeed(speedOfRightMotors);
+  
   return "ok";
 }
 
