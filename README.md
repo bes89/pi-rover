@@ -6,9 +6,9 @@ This repository provides a ready-to-use micro-framework based on Python, C++, Ja
 ## Features
 
 * Communication over Wifi
-* Web-Interface - not app needed
-* Video streaming in real time (up to 1080p@30fps)
-* Based on ArchLinux OS - no limits
+* A user friendly and beautiful web-interface - no app is needed!
+* Video streaming in real time (up to 1080p@30fps - yes, its full hd!)
+* Based on arch linux - no limits
 
 ## Required Hardware
 
