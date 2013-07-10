@@ -36,7 +36,8 @@ void setup()
   Serial.begin(9600);
   Serial.print("Ready\n");
   pinMode(ledPin, OUTPUT);
-  
+
+  // calibrate the servo during setup
   servo.attach(9);
   
   servo.write(0);
@@ -44,7 +45,6 @@ void setup()
   servo.write(180);
   delay(500);
   servo.write(90);
-  
   delay(350);
   
   servo.detach();
@@ -67,16 +67,18 @@ void loop()
   }
 
   if (safetyDriveMode) {
+
+    // set the interval for measuring distance
     int checkDistanceInterval = map(
       motorSpeed,
       0, maxMotorSpeed,
-      500, 100
+      400, 50 // in milliseconds
     );
     
     int distanceToStop = map(
       motorSpeed,
       0, maxMotorSpeed,
-      15, 60
+      15, 60 // in centimeter
     );
     
     runEvery(checkDistanceInterval) {
@@ -93,6 +95,8 @@ void loop()
     }
 
     if (debugMode) {
+      // the "checkDistanceInterval" and "distanceToStop" is dynamically set based on how fast
+      // the robot is moving. this output shows us every 2 seconds how its configured for the moment
       runEvery(2000) {
         Serial.print("Safety drive: check interval "+String(checkDistanceInterval)+
         ", distance to stop: "+String(distanceToStop)+"\n");
@@ -145,7 +149,8 @@ String handleCommand(String input) {
   
   String command = getCommandFromInput(input);
   int argument = getArgumentFromInput(input);
-  
+
+  // yes, a switch-case-construct would be better, but its not supporting strings as case value.. only integers
   if(command == "battery") {
     result = checkBatteryStatus(argument);
   } else if(command == "distance") {
@@ -164,8 +169,11 @@ String handleCommand(String input) {
     result = halt(argument);
   } else if(command == "debug") {
     result = debug(argument);
+  // here we can add additional functions:
+  // } else if(command == "doSomething") {
+  //   result = doSomething(argument);
   } else {
-    result = "unknown command: " + command + ", arg: " + argument;
+    result = "unknown command: " + command;
   }
     
   return result;
@@ -173,7 +181,7 @@ String handleCommand(String input) {
 
 String lookDirection(int argument) {
   String result;
-  
+
   if (argument >= 0 && argument <= 180) {
   
     digitalWrite(ledPin, HIGH);
@@ -187,15 +195,17 @@ String lookDirection(int argument) {
     if (servo.read() > argument) {
       waitTimeInMs = servo.read() - argument;
     } else {
-      waitTimeInMs = servo.read() + argument;
+      waitTimeInMs = argument - servo.read();
     }
-
+    
+    waitTimeInMs = (waitTimeInMs + 100) * 2;
+    
     servo.write(argument);
-    
-    Serial.print(waitTimeInMs);
-    
-    delay(waitTimeInMs * 3);
-    
+
+    // give the servo some time to do its job
+    delay(waitTimeInMs);
+
+    // we detach the servo variable from its pin to save energy
     servo.detach();
     
     digitalWrite(ledPin, LOW);
@@ -216,6 +226,7 @@ String forward(int speedInPercentage)
   }
   
   isMovingForward = true;
+  isMovingBackward = false;
   
   turnMotorsOn();
   
@@ -233,7 +244,8 @@ String backward(int speedInPercentage)
   {
     setMotorSpeed(speedInPercentage);
   }
-  
+
+  isMovingForward = false;
   isMovingBackward = true;
   
   turnMotorsOn();
@@ -253,17 +265,18 @@ String halt(int argument)
     0, maxMotorSpeed,
     0, 100
   );
-  
+
+  // to pull the brake strongly we move for a short time in the opposite direction
   if (isMovingForward)
   {
     backward(80);
-    delay(currentMotorSpeedInPercentage * 2);
   }
   else if(isMovingBackward)
   {
     forward(80);
-    delay(currentMotorSpeedInPercentage * 2);
   }
+
+  delay(currentMotorSpeedInPercentage * 2);
   
   turnMotorsOff();
   
@@ -272,7 +285,6 @@ String halt(int argument)
 
   return "ok";
 }
-
 
 
 String left(int speedInPercentage)
