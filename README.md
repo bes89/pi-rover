@@ -30,4 +30,42 @@ This repository provides a ready-to-use micro-framework based on Python, C++, Ja
 
 ## How to install
 
+### Step 1: Checkout the project locally
+
+git clone git@github.com:bes89/pi-rover.git
+
+### Step 2: Get your Arduino ready
+
+After you checked out the project locally install these two dependencies:
+
+mkdir ~/sketchbook/libraries
+git clone https://github.com/adafruit/Adafruit-Motor-Shield-library
+git clone https://github.com/fmbfla/Arduino.git
+
+Then open the arduino/pi_rover/pi_rover.ino in your Arduino IDE and upload it to your Arduino.
+
+The Arduino is now ready.
+
+### Step 3: Checkout the project remotely on your raspberry pi
+
+ssh to your raspi and then:
+
+git clone git@github.com:bes89/pi-rover.git
+cd pi-rover/
+virtualenv-2.7 venv
+source venv/bin/activate
+./venv/bin/pip-2.7 install -r requirements.txt
+./venv/bin/python2.7 runserver.py
+
+Open this in browser:
+http://<ip-of-your-raspi>:5000/
+
 ## Contribute
+
+## TODOs / Planned Features
+
+[ ] lag free video streaming to the browser (for now we are using netcat, tried vlc, ffmpeg, gstreamer and mjpeg-stream - all with lags >2s)
+[ ] run with the fast python interpreter "pypy" (gevent is here the problem)
+[ ] implement json rpc over websockets to be able to call functions remotely in javascript (https://github.com/brainrape/jsonrpcws)
+[ ] handle wifi connections directly in python
+[ ] create a basis to work with opencv

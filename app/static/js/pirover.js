@@ -157,20 +157,22 @@ var PiRover	= function(options) {
         outputEl.innerHTML = '<b>Input:</b> ' + inputFeedback;
     }
 
-    this.suspend = function() {
-
-    }
-
     this.turnOff = function() {
-
+        return this.websocket.send(JSON.stringify({
+            'command': 'turnoff'
+        }));
     }
 
-    this.checkBatteryStatus = function() {
-
+    this.getBatteryLife = function() {
+        return this.websocket.send(JSON.stringify({
+            'command': 'getBatteryLife'
+        }));
     }
 
     this.measureDistance = function() {
-
+        return this.websocket.send(JSON.stringify({
+            'command': 'measureDistance'
+        }));
     }
 
     this.checkIfIsStopped = function checkIfIsStopped(ignoreStoppedFlag) {
