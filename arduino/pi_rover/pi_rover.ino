@@ -153,7 +153,7 @@ String handleCommand(String input) {
   // yes, a switch-case-construct would be better, but its not supporting strings as case value.. only integers
   if(command == "battery") {
     result = checkBatteryStatus(argument);
-  } else if(command == "distance") {
+  } else if(command == "measureDistance") {
     result = measureDistance(argument);
   } else if(command == "look") {
     result = lookDirection(argument);

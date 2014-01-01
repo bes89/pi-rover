@@ -25,6 +25,12 @@ class Rover:
     def look(self, inDegrees):
         return self.sendCommandToArduino('look', inDegrees)
 
+    def measureDistance(self, ignoredArgument):
+        return self.sendCommandToArduino('measureDistance')
+
+    def getBatteryLife(self, ignoredArgument):
+        return self.sendCommandToArduino('getBatteryLife')
+
     def sendCommandToArduino(self, cmd, arg=None):
         if self.serialInterface.writable():
             if arg is None:
@@ -36,3 +42,6 @@ class Rover:
         else:
             print "cmd %s with %s failed" % (cmd, arg)
             return "failed"
+
+
+

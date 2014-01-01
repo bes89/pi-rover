@@ -40,13 +40,13 @@
         </div>
     </div>
 
-    <div class="mainPanel">
-        <div id="videoStream">
+    <div class="mainPanel" style="position: relative">
+        <div id="videoStream" style="position: absolute">
             <video id="liveStream" poster preload="true">
                 <source src="#" type="video/mp4">
             </video>
         </div>
-        <div id="joystick">
+        <div id="joystick" style="position: absolute;">
         </div>
     </div>
 
@@ -70,7 +70,7 @@
     rover.init();
 
     $("#ping").bind("click", function () {
-        var distance = rover.measureDistance();
+        rover.measureDistance();
     });
 
     $("#lookMode").bind("click", function () {

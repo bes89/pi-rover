@@ -18,6 +18,12 @@ def handle_websocket(ws):
             if 'argument' in message:
                 argument = message['argument']
 
+            if message == 'turnoff':
+                command = "/sbin/shutdown -P 2"
+                import subprocess
+                process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+                result = process.communicate()[0]
+
             if hasattr(pirover, command):
                 result = getattr(pirover, command)(argument)
             else:

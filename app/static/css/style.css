@@ -17,7 +17,6 @@ html, body {
     position: absolute;
 }
 #joystick {
-    opacity: 0.75;
     z-index: 2;
     position: absolute;
 }
