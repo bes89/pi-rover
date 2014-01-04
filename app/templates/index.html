@@ -1,20 +1,6 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta content='True' name='HandheldFriendly' />
-    <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
-    <title>My PiRover</title>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <script src="{{ url_for('static', filename='js/jquery-1.8.2.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/virtualjoystick/virtualjoystick.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pirover.js') }}"></script>
-</head>
-<body>
-<div class="container">
+{% extends "layout.html" %}
 
+{% block content %}
     <div class="infoPanel">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
@@ -62,33 +48,38 @@
             <div class="clear"></div>
         </div>
     </div>
-</div>
+{% endblock %}
 
-<script>
-    var rover = new PiRover();
+{% block javascript %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/virtualjoystick/virtualjoystick.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pirover.js') }}"></script>
+{% endblock %}
 
-    rover.init();
+{% block javascript_bottom %}
+    <script>
+        var rover = new PiRover();
 
-    $("#ping").bind("click", function () {
-        rover.measureDistance();
-    });
+        rover.init();
 
-    $("#lookMode").bind("click", function () {
-        if (rover.lookMode == false) {
-            rover.lookMode = true;
-            $(this).addClass("btn-info");
-            $(this).removeClass("btn-primary");
-        } else {
-            rover.lookMode = false;
-            $(this).addClass("btn-primary");
-            $(this).removeClass("btn-info");
-        }
-    });
+        $("#ping").bind("click", function () {
+            rover.measureDistance();
+        });
 
-    $("#turnOff").bind("click", function () {
-        rover.turnOff();
-    });
-</script>
+        $("#lookMode").bind("click", function () {
+            if (rover.lookMode == false) {
+                rover.lookMode = true;
+                $(this).addClass("btn-info");
+                $(this).removeClass("btn-primary");
+            } else {
+                rover.lookMode = false;
+                $(this).addClass("btn-primary");
+                $(this).removeClass("btn-info");
+            }
+        });
 
-</body>
-</html>
+        $("#turnOff").bind("click", function () {
+            rover.turnOff();
+        });
+    </script>
+{% endblock %}
