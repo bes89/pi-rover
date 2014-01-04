@@ -3,10 +3,16 @@ import commands
 
 
 class Rover:
+    serialPorts = ['/dev/ttyACM0', '/dev/ttyACM1']
     serialInterface = None
 
     def __init__(self):
-        self.serialInterface = serial.Serial('/dev/ttyACM0', 9600)
+        for serialPort in self.serialPorts:
+            try:
+                self.serialInterface = serial.Serial(serialPort, 9600)
+                break
+            except OSError:
+                pass
 
     def forward(self, speedInPercentage):
         return self.sendCommandToArduino('forward', speedInPercentage)
