@@ -1,4 +1,5 @@
 import serial
+import commands
 
 
 class Rover:
@@ -30,6 +31,20 @@ class Rover:
 
     def getBatteryLife(self, ignoredArgument):
         return self.sendCommandToArduino('getBatteryLife')
+
+    def getCpuTemp(self, ignoredArgument):
+        tempFile = open('/sys/class/thermal/thermal_zone0/temp')
+        cpu_temp = tempFile.read()
+        tempFile.close()
+        return float(cpu_temp)/1000
+        # Uncomment the next line if you want the temp in Fahrenheit
+        #return float(1.8*cpu_temp)+32
+
+    def getGpuTemp(self, ignoredArgument):
+        gpu_temp = commands.getoutput('/opt/vc/bin/vcgencmd measure_temp').replace('temp=', '').replace('\'C', '')
+        return float(gpu_temp)
+        # Uncomment the next line if you want the temp in Fahrenheit
+        # return float(1.8* gpu_temp)+32
 
     def sendCommandToArduino(self, cmd, arg=None):
         if self.serialInterface.writable():
